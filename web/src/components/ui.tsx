@@ -10,6 +10,10 @@ import { NAMES } from "@/mocks";
 
 export const GHOST_DAYS = 21;
 
+const PASTELS = ["#ffd6c2", "#e3d7ff", "#c9f0de", "#fff0b8", "#ffd0dc", "#cfe4ff"];
+/** A soft pastel per person, stable across renders. */
+export const pastel = (name: string) => PASTELS[[...name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % PASTELS.length];
+
 export function fmtWhen(iso: string) {
   const d = new Date(iso);
   const today = new Date();
@@ -40,14 +44,14 @@ export function Shell({ title, children, offline }: { title: string; children: R
       <header className="mb-5 flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="mb-1 inline-flex items-center gap-1.5 text-[13px] font-medium text-muted">
-            <GhostIcon className="h-3.5 w-3.5 text-accent-ink" /> Don&apos;t Ghost Me
+            <GhostIcon className="h-3.5 w-3.5 text-accent" /> Don&apos;t Ghost Me
           </p>
-          <h1 className="truncate font-serif text-[34px] font-semibold leading-tight">{title}</h1>
+          <h1 className="font-serif text-[34px] font-semibold leading-tight">{title}</h1>
         </div>
         <div className="flex shrink-0 rounded-full border border-line bg-card p-1 text-sm">
           {(["erin", "partner"] as const).map((u) => (
             <Link key={u} href={swap(u)} replace
-              className={`rounded-full px-3 py-1.5 transition-colors ${me === u ? "bg-white text-black font-semibold" : "text-muted hover:text-foreground"}`}>
+              className={`rounded-full px-3 py-1.5 transition-colors ${me === u ? "bg-accent font-semibold" : "text-muted hover:text-foreground"}`}>
               {NAMES[u]}
             </Link>
           ))}
@@ -72,10 +76,10 @@ function Nav() {
   ];
   return (
     <nav className="fixed inset-x-0 bottom-5 z-40 px-4">
-      <div className="mx-auto flex max-w-sm gap-1 rounded-full border border-line bg-[rgba(20,20,28,0.75)] p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+      <div className="mx-auto flex max-w-sm gap-1 rounded-full border border-line bg-[rgba(29,16,22,0.8)] p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl">
         {items.map((it) => (
           <Link key={it.path} href={href(it.path)}
-            className={`flex-1 rounded-full py-3 text-center text-[15px] font-medium transition-colors ${path === it.path ? "bg-white/10 text-foreground" : "text-muted hover:text-foreground"}`}>
+            className={`flex-1 rounded-full py-3 text-center text-[15px] font-medium transition-colors ${path === it.path ? "bg-accent/15 text-accent" : "text-muted hover:text-foreground"}`}>
             {it.label}
           </Link>
         ))}
@@ -94,24 +98,28 @@ export function PersonCard({ name, days, subtitle, link }: { name: string; days:
         <span className="haunt ghost-glow text-pumpkin/90" style={{ animationDelay: `${(name.length % 5) * 0.4}s` }}>
           <GhostIcon className="h-10 w-10" />
         </span>
-        <span className="text-sm font-medium text-foreground/80">{name.split(" ")[0]}</span>
+        <span className="font-spooky text-sm text-pumpkin/90">{name.split(" ")[0]}</span>
         <span className="text-xs text-muted">{days}d</span>
       </Link>
     );
   }
   const fade = 1 - (days / GHOST_DAYS) * 0.55;
   return (
-    <Link href={href(link)}
-      className="rise-in flex items-center gap-4 rounded-3xl border border-line bg-card p-4 transition-all duration-700 hover:border-white/20"
-      style={{ opacity: fade, filter: `grayscale(${Math.min(1, days / GHOST_DAYS)})` }}>
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent/60 to-sandstone/40 text-xl font-semibold text-white ring-1 ring-white/15">
+    <Link href={href(link)} style={{ opacity: fade, filter: `grayscale(${Math.min(1, days / GHOST_DAYS)})` }}
+      className="rise-in relative flex items-center gap-4 rounded-3xl border border-line bg-card p-4 transition-all duration-700 hover:border-white/20">
+      {days >= 12 && (
+        <span className="peek pointer-events-none absolute -right-1 -top-3 text-pumpkin ghost-glow" style={{ animationDelay: `${(name.length % 4) * 1.3}s` }}>
+          <GhostIcon className="h-6 w-6" />
+        </span>
+      )}
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#ffe7b8] font-spooky text-xl text-[#2a1406] ring-2 ring-[#ffcf6b]/30 shadow-[0_0_18px_rgba(255,207,107,0.35)]">
         {name[0]}
       </div>
       <div className="min-w-0 flex-1">
         <div className="font-serif text-xl font-semibold">{name}</div>
         <div className="truncate text-[15px] text-muted">{subtitle ?? daysLabel(days)}</div>
       </div>
-      <div className="rounded-full border border-line px-2.5 py-1 text-xs tabular-nums text-muted">{days}d</div>
+      <Candle days={days} />
     </Link>
   );
 }
@@ -128,10 +136,10 @@ export function ProposalPopup({ state, onDone }: { state: StateView; onDone: () 
   };
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 backdrop-blur-sm sm:items-center">
-      <div className="rise-in w-full max-w-md rounded-[28px] border border-white/10 bg-raised p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6),0_0_0_1px_rgba(124,108,255,0.15)]">
+      <div className="rise-in w-full max-w-md rounded-[28px] border border-white/10 bg-raised p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6),0_0_40px_rgba(255,207,107,0.15)]">
         <p className="inline-flex items-center gap-2 text-sm font-medium text-accent-ink"><span className="live-dot h-2 w-2 rounded-full bg-sandstone" />Your agents found a time</p>
-        <h2 className="mt-2 font-serif text-3xl font-semibold leading-snug">
-          {p.place} with {state.other.name}
+        <h2 className="mt-2 font-serif text-3xl font-medium leading-snug">
+          {p.place} <span className="text-accent">with {state.other.name}</span>
         </h2>
         <p className="mt-1 text-xl">{fmtWhen(p.at)}</p>
         <p className="mt-3 text-lg text-muted">{p.reason}</p>
@@ -150,7 +158,7 @@ export function ProposalPopup({ state, onDone }: { state: StateView; onDone: () 
 export function PrivateNoteBadge() {
   return (
     <span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-sm text-accent-ink">
-      <span aria-hidden>🔒</span> Used your private note
+      <span aria-hidden>🤫</span> Used your private note
     </span>
   );
 }
@@ -167,12 +175,30 @@ export function BriefCard({ state, proposal }: { state: StateView; proposal: Pro
     return () => { alive = false; };
   }, [me, state.other.id, proposal.id]);
   return (
-    <div className="rise-in rounded-3xl border border-white/10 bg-gradient-to-br from-accent/30 via-accent/10 to-sandstone/10 p-5 shadow-[0_20px_60px_rgba(107,91,255,0.2)]">
+    <div className="rise-in rounded-3xl border border-white/10 bg-gradient-to-br from-accent/30 via-accent/10 to-sandstone/10 p-5 shadow-[0_20px_60px_rgba(255,191,77,0.18)]">
       <p className="text-sm font-medium text-sandstone">It&apos;s on ✓</p>
       <h2 className="mt-1 font-serif text-3xl font-semibold">{state.other.name} · {proposal.place}</h2>
       <p className="text-xl">{fmtWhen(proposal.at)}</p>
       {proposal.usedMyPrivateNote && <PrivateNoteBadge />}
       <p className="mt-4 text-lg leading-relaxed">{brief ?? "Writing your brief..."}</p>
+    </div>
+  );
+}
+
+/** Days since you met, as a candle that burns down. Fresh = tall flame; 3 weeks = a stub. */
+export function Candle({ days }: { days: number }) {
+  const h = Math.max(4, 22 - (days / GHOST_DAYS) * 18);
+  return (
+    <div className="flex w-10 shrink-0 flex-col items-center" title={`${days} days`}>
+      <svg viewBox="0 0 20 36" className="h-9 w-5" aria-hidden>
+        <g className="flame" style={{ transformBox: "fill-box" }}>
+          <path d={`M10 ${34 - h - 9} C 6 ${34 - h - 4}, 7 ${34 - h}, 10 ${34 - h} C 13 ${34 - h}, 14 ${34 - h - 4}, 10 ${34 - h - 9} Z`} fill="#ffcf6b" />
+          <path d={`M10 ${34 - h - 5} C 8.5 ${34 - h - 2}, 9 ${34 - h}, 10 ${34 - h} C 11 ${34 - h}, 11.5 ${34 - h - 2}, 10 ${34 - h - 5} Z`} fill="#fff4e2" />
+        </g>
+        <rect x="7" y={34 - h} width="6" height={h} rx="1.5" fill="#ffe7b8" />
+        <rect x="5" y="33" width="10" height="2.5" rx="1.2" fill="#b9a596" opacity="0.6" />
+      </svg>
+      <span className="text-[11px] tabular-nums text-muted">{days}d</span>
     </div>
   );
 }

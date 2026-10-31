@@ -20,6 +20,7 @@ export interface ProposalView {
 export interface Ghost {
   id: string; name: string; lastSeenAt: string; daysSince: number;
   oneLiner?: string;
+  metPlace?: string;
   profile: PersonProfile | null; // live mode only has a summary, no full profile
 }
 

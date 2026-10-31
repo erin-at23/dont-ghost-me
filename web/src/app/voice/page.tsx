@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Chip, Shell } from "@/components/ui";
+import { Chip, GhostIcon, Shell } from "@/components/ui";
 import type { Extraction } from "@/lib/types";
 import { post } from "@/lib/usePoll";
 import { useMe } from "@/lib/user";
@@ -71,11 +71,11 @@ export default function Voice() {
 
   const stop = () => rec.current?.state === "recording" && rec.current.stop();
   const busy = phase === "transcribing" || phase === "remembering";
-  const status = { idle: "Tap and tell me about them", listening: "Listening...", transcribing: "Remembering...", remembering: "Remembering...", done: "Saved", error: "Something went wrong" }[phase];
+  const status = { idle: "Tell me about them in 10 seconds. I\u2019ll remember the rest.", listening: "Listening...", transcribing: "Remembering...", remembering: "Remembering...", done: "Saved", error: "Something went wrong" }[phase];
 
   return (
     <Shell title="Voice note">
-      <p className="text-lg text-muted">About <span className="text-foreground">{NAMES[other]}</span></p>
+      <p className="text-lg text-muted">Just met <span className="font-spooky text-accent">{NAMES[other]}</span>? Your notes stay private. 🤫</p>
       <label className="flex items-center gap-3 text-lg text-muted">
         Where
         <input value={place} onChange={(e) => setPlace(e.target.value)}
@@ -84,11 +84,24 @@ export default function Voice() {
 
       {!typing ? (
         <div className="flex flex-col items-center gap-4 py-4">
-          <button onClick={phase === "listening" ? stop : start} disabled={busy}
-            className={`h-40 w-40 rounded-full text-xl font-semibold transition-all ${phase === "listening" ? "scale-105 bg-accent text-white animate-pulse" : "border border-white/15 bg-card text-foreground shadow-[0_0_60px_rgba(124,108,255,0.25)]"} disabled:opacity-40`}>
-            {phase === "listening" ? "Stop" : "Record"}
-          </button>
+          <div className="relative flex h-56 w-56 items-center justify-center">
+            {phase === "listening" && <>
+              <span className="absolute inset-0 animate-ping rounded-full border border-accent/40" />
+              <span className="absolute inset-6 animate-ping rounded-full border border-accent/30 [animation-delay:0.4s]" />
+            </>}
+            <span className="absolute inset-4 rounded-full bg-[radial-gradient(circle,rgba(255,207,107,0.28),transparent_65%)]" />
+            <button onClick={phase === "listening" ? stop : start} disabled={busy}
+              className={`relative flex h-40 w-40 flex-col items-center justify-center gap-1 rounded-full font-spooky text-xl transition-all ${phase === "listening" ? "scale-105 bg-accent" : "border-2 border-accent/60 bg-[#1d1016] text-accent shadow-[0_0_50px_rgba(255,207,107,0.35)]"} disabled:opacity-40`}>
+              <span className={phase === "listening" ? "haunt" : "bob"}><GhostIcon className="h-12 w-12" /></span>
+              {phase === "listening" ? "I'm listening…" : busy ? "Remembering…" : "Tap to talk"}
+            </button>
+          </div>
           <p className="text-xl">{status}</p>
+          <div className="flex flex-wrap justify-center gap-2 text-sm text-muted">
+            {["Where did you meet?", "What do you have in common?", "One thing to remember"].map((q) => (
+              <span key={q} className="rounded-full border border-line bg-card px-3 py-1">{q}</span>
+            ))}
+          </div>
           <button onClick={() => setTyping(true)} className="text-base text-muted underline">Type it instead</button>
         </div>
       ) : (

@@ -206,7 +206,7 @@ export const liveBackend: Backend = {
     const proposal = proposalFor(fr.proposal, as, fr.proposal?.usedNoteOf ?? null);
     const ghosts = (people ?? [])
       .filter((x) => x.personId !== other)
-      .map((x) => ({ id: x.personId, name: x.name, lastSeenAt: x.lastSeenAt, daysSince: daysSince(x.lastSeenAt), oneLiner: x.oneLiner, profile: null }))
+      .map((x) => ({ id: x.personId, name: x.name, lastSeenAt: x.lastSeenAt, daysSince: daysSince(x.lastSeenAt), oneLiner: x.oneLiner, metPlace: x.metPlace, profile: null }))
       .sort((a, b) => a.daysSince - b.daysSince);
     return {
       me: { id: as, name: myProfile.displayName || NAMES[as], wantsClose },

@@ -13,16 +13,16 @@ export default function Demo() {
     setMsg(`${label}...`);
     try { await post(url, payload); setMsg(`${label}: done`); } catch (e) { setMsg(`${label} failed: ${(e as Error).message}`); }
   };
-  const btn = "w-full rounded-2xl py-5 text-2xl font-semibold";
+  const btn = "w-full rounded-3xl py-5 text-xl font-semibold";
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 px-4 py-8">
-      <h1 className="font-serif text-3xl font-semibold">Demo controls</h1>
-      <button className={`${btn} border border-line`} onClick={run("Reset", "/api/demo/reset")}>Reset</button>
-      <button className={`${btn} border border-line`} onClick={run("Simulate 21 days", "/api/demo/simulate", { days: 21 })}>Simulate 21 days</button>
+      <p className="text-sm text-muted">👻 Don&apos;t Ghost Me</p><h1 className="font-serif text-4xl font-medium">Demo <span className="text-accent">controls</span></h1>
+      <button className={`${btn} border border-line bg-card`} onClick={run("Reset", "/api/demo/reset")}>Reset</button>
+      <button className={`${btn} border border-line bg-card`} onClick={run("Simulate 21 days", "/api/demo/simulate", { days: 21 })}>Simulate 21 days</button>
       <button className={`${btn} bg-accent text-white`} onClick={run("Find time", "/api/demo/find-time", { as: "partner" })}>Find time</button>
       <p className="min-h-7 text-lg text-muted">{msg}</p>
       {s && (
-        <div className="rounded-2xl border border-line p-4 text-base text-muted">
+        <div className="rounded-3xl border border-line bg-card p-4 text-base text-muted">
           Days since: {s.friendship.daysSince} · Proposal: {s.friendship.proposal?.status ?? "none"} · Relay lines: {s.relayLog.length}
         </div>
       )}
