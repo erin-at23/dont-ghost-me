@@ -10,7 +10,7 @@ const serif = Source_Serif_4({ variable: "--font-serif-display", subsets: ["lati
 const spooky = Creepster({ variable: "--font-spooky-display", subsets: ["latin"], weight: "400" });
 
 export const metadata: Metadata = {
-  title: "Don't Ghost",
+  title: "Don't Ghost Me",
   description: "Your agents keep your friendships from fading.",
 };
 

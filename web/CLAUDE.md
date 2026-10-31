@@ -1,4 +1,4 @@
-# Don't Ghost · web/ (partner's half)
+# Don't Ghost Me · web/ (partner's half)
 
 ## Who and when
 

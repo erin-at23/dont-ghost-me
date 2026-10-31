@@ -40,7 +40,7 @@ function ShowAndScan() {
   const onScan = (text: string) => {
     try {
       const f = new URL(text).searchParams.get("from");
-      if (!f) throw new Error("Not a Don't Ghost code");
+      if (!f) throw new Error("Not a Don't Ghost Me code");
       setScanning(false);
       router.push(`/connect?from=${f}&as=${me}`);
     } catch (e) { setErr((e as Error).message); }

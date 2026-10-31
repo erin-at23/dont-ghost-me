@@ -51,7 +51,7 @@ export default function Voice() {
       r.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
         const type = r.mimeType || mime || "audio/webm";
-        const ext = type.includes("mp4") ? "mp4" : "webm";
+        const ext = type.includes("mp4") ? "m4a" : "webm"; // whisper rejects .mp4 audio
         const form = new FormData();
         form.append("file", new Blob(chunks, { type }), `note.${ext}`);
         try {

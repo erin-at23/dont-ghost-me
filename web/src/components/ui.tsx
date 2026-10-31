@@ -39,7 +39,7 @@ export function Shell({ title, children, offline }: { title: string; children: R
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-28 pt-6">
       <header className="mb-5 flex items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-ink">Don&apos;t Ghost</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-ink">Don&apos;t Ghost Me</p>
           <h1 className="font-serif text-4xl font-semibold tracking-tight">{title}</h1>
         </div>
         <div className="flex rounded-full border border-line p-1 text-sm">
