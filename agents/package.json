@@ -1,0 +1,21 @@
+{
+    "name": "client",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "agents": "bun agent.ts",
+        "seed": "bun seed.ts",
+        "smoke": "bun smoke.ts"
+    },
+    "dependencies": {
+        "@agent-relay/sdk": "15.0.1",
+        "commander": "^14.0.3",
+        "openai": "^7.47.0",
+        "terse-sdk": "0.14.9",
+        "zod": "^4.6.7"
+    },
+    "devDependencies": {
+        "@types/node": "^22.0.0",
+        "typescript": "~5.9.3"
+    }
+}

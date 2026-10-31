@@ -1,0 +1,4 @@
+node_modules/
+.durable-actors/
+.env
+.env.local
