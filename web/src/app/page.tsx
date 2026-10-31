@@ -1,6 +1,6 @@
 "use client";
 
-import { BriefCard, GHOST_DAYS, PersonCard, ProposalPopup, Shell, daysLabel } from "@/components/ui";
+import { BriefCard, FriendCard, GHOST_DAYS, NudgeCard, PersonCard, ProposalPopup, Shell, daysLabel } from "@/components/ui";
 import type { StateView } from "@/lib/types";
 import { usePoll } from "@/lib/usePoll";
 import { useMe } from "@/lib/user";
@@ -23,11 +23,9 @@ export default function Home() {
           You&apos;re in for <span className="text-accent-ink">{p.place}</span>. We&apos;ll confirm once it&apos;s set.
         </div>
       )}
-      {s.nudge && !p && (
-        <div className="rise-in rounded-2xl border border-accent/40 p-4 text-lg text-accent-ink">{s.nudge}</div>
-      )}
+      {s.nudge && !p && <NudgeCard text={s.nudge} />}
 
-      <PersonCard
+      <FriendCard
         name={s.other.name}
         days={s.friendship.daysSince}
         link={`/person?id=${s.other.id}`}
