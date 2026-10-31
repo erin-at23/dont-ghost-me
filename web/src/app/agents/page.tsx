@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { GhostIcon, fmtWhen } from "@/components/ui";
 import type { StateView } from "@/lib/types";
 import { usePoll } from "@/lib/usePoll";
 import { NAMES } from "@/mocks";
 import { CampusMap } from "@/components/CampusMap";
-import { GhostIcon } from "@/components/ui";
 
 // Big-screen view of the agents talking. One color per agent.
 const ERIN_AGENT = `${NAMES.erin}'s agent`;
@@ -31,7 +31,12 @@ export default function Agents() {
         <span className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-4 py-2 text-base text-muted">{offline ? "Reconnecting…" : <><span className="live-dot h-2.5 w-2.5 rounded-full bg-sandstone" /> live</>}</span>
       </header>
       <div className="flex flex-1 flex-col gap-5">
-        {count === 0 && !s?.relayTyping && <p className="text-2xl text-muted">Waiting for the agents...</p>}
+        {count === 0 && !s?.relayTyping && (
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 text-muted">
+            <span className="haunt ghost-glow text-foreground/80"><GhostIcon className="h-24 w-24" /></span>
+            <p className="text-3xl">Waiting for the agents...</p>
+          </div>
+        )}
         {s?.relayLog.map((l, i) => (
           <div key={`${l.at}-${i}`} className={`rise-in max-w-[80%] ${side(l.from)}`}>
             <div className={`mb-1 text-lg font-semibold ${color(l.from).split(" ")[0]}`}>{l.from}</div>
@@ -46,6 +51,14 @@ export default function Agents() {
             <div className="inline-flex gap-2 rounded-[28px] border border-line bg-card px-6 py-5 text-2xl text-muted">
               <span className="hop inline-block"><GhostIcon className="h-6 w-6" /></span><span className="hop inline-block"><GhostIcon className="h-6 w-6" /></span><span className="hop inline-block"><GhostIcon className="h-6 w-6" /></span>
             </div>
+          </div>
+        )}
+        {s?.friendship.proposal && (
+          <div className="rise-in mt-4 self-center rounded-3xl border-2 border-accent bg-accent/15 px-8 py-6 text-center">
+            <p className="text-lg font-semibold uppercase tracking-[0.25em] text-accent-ink">
+              {s.friendship.proposal.status === "accepted" ? "It's on" : "Sent to both phones"}
+            </p>
+            <p className="mt-2 font-serif text-4xl font-semibold">{s.friendship.proposal.place} · {fmtWhen(s.friendship.proposal.at)}</p>
           </div>
         )}
         <div ref={end} />

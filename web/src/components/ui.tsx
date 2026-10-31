@@ -211,3 +211,58 @@ export function Chip({ children, i = 0 }: { children: ReactNode; i?: number }) {
     </span>
   );
 }
+
+/** The main friend. Remounts when crossing the ghost line, so each side plays its own entrance. */
+export function FriendCard({ name, days, subtitle, link }: { name: string; days: number; subtitle: string; link: string }) {
+  const { href } = useMe();
+  const ghost = days > GHOST_DAYS;
+  if (ghost) {
+    return (
+      <Link key="ghost" href={href(link)}
+        className="fade-to-ghost flex items-center gap-4 rounded-2xl border border-pumpkin/30 bg-[radial-gradient(circle_at_15%_50%,rgba(242,140,40,0.14),transparent_60%)] bg-card p-4">
+        <span className="haunt ghost-glow shrink-0 text-foreground/90"><GhostIcon className="h-14 w-14" /></span>
+        <div className="min-w-0 flex-1">
+          <div className="spooky-text font-spooky text-3xl tracking-wide text-pumpkin">{name}</div>
+          <div className="text-base text-muted">{days} days. Don&apos;t ghost.</div>
+        </div>
+      </Link>
+    );
+  }
+  const fade = 1 - (days / GHOST_DAYS) * 0.55;
+  return (
+    <Link key="alive" href={href(link)} className="rise-back block rounded-2xl">
+      <div className="flex items-center gap-4 rounded-2xl border border-line bg-card p-4 transition-all duration-700"
+        style={{ opacity: fade, filter: `grayscale(${Math.min(1, days / GHOST_DAYS)})` }}>
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent/20 font-serif text-2xl font-semibold text-accent-ink ring-1 ring-accent/40">
+          {name[0]}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="font-serif text-2xl font-semibold">{name}</div>
+          <div className="truncate text-base text-muted">{subtitle}</div>
+        </div>
+        <div className="text-sm text-muted">{days}d</div>
+      </div>
+    </Link>
+  );
+}
+
+/** One tap to let the agents look for a time. Nobody types on stage. */
+export function NudgeCard({ text }: { text: string }) {
+  const { me } = useMe();
+  const [asked, setAsked] = useState(false);
+  const [err, setErr] = useState("");
+  const ask = async () => {
+    setAsked(true); setErr("");
+    try { await post("/api/demo/find-time", { as: me }); } catch (e) { setAsked(false); setErr((e as Error).message); }
+  };
+  return (
+    <div className="rise-in rounded-3xl border border-accent/40 bg-accent/10 p-5">
+      <p className="font-serif text-2xl leading-snug">{text}</p>
+      <button onClick={ask} disabled={asked}
+        className="mt-4 w-full rounded-2xl bg-accent py-4 text-xl font-semibold text-white disabled:opacity-60">
+        {asked ? "Your agents are talking..." : "Find us a time"}
+      </button>
+      {err && <p className="mt-2 text-base text-red-400">{err}</p>}
+    </div>
+  );
+}

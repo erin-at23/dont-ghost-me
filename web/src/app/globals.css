@@ -141,3 +141,17 @@ input:focus, textarea:focus { border-color: rgba(255, 207, 107, 0.5); box-shadow
 .hop { animation: hop 1.1s ease-in-out infinite; }
 .hop:nth-child(2) { animation-delay: 0.15s; }
 .hop:nth-child(3) { animation-delay: 0.3s; }
+
+/* Friend card: fades into a ghost past 21 days, rises back when you meet again. */
+@keyframes fade-to-ghost {
+  from { opacity: 1; filter: none; transform: none; }
+  to { opacity: 0.85; filter: grayscale(0.6); transform: scale(0.98); }
+}
+.fade-to-ghost { animation: fade-to-ghost 1.4s ease-out both; }
+
+@keyframes rise-back {
+  0% { opacity: 0; transform: translateY(28px) scale(0.9); filter: blur(6px); }
+  60% { opacity: 1; transform: translateY(-4px) scale(1.02); filter: none; box-shadow: 0 0 40px rgba(184, 58, 75, 0.55); }
+  100% { transform: none; box-shadow: 0 0 0 rgba(184, 58, 75, 0); }
+}
+.rise-back { animation: rise-back 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
