@@ -20,11 +20,11 @@ export default function Home() {
       {p?.status === "accepted" && <BriefCard state={s} proposal={p} />}
       {p?.status === "pending" && p.myResponse === "yes" && (
         <div className="rise-in rounded-2xl border border-line bg-card p-4 text-lg">
-          You&apos;re in for <span className="text-accent">{p.place}</span>. We&apos;ll confirm once it&apos;s set.
+          You&apos;re in for <span className="text-accent-ink">{p.place}</span>. We&apos;ll confirm once it&apos;s set.
         </div>
       )}
       {s.nudge && !p && (
-        <div className="rise-in rounded-2xl border border-accent/40 p-4 text-lg text-accent">{s.nudge}</div>
+        <div className="rise-in rounded-2xl border border-accent/40 p-4 text-lg text-accent-ink">{s.nudge}</div>
       )}
 
       <PersonCard
@@ -38,8 +38,9 @@ export default function Home() {
       ))}
 
       {ghosts.length > 0 && (
-        <section className="mt-4">
-          <h2 className="mb-2 text-lg text-muted">Fading away</h2>
+        <section className="mt-4 rounded-3xl border border-pumpkin/20 bg-[radial-gradient(circle_at_50%_0%,rgba(242,140,40,0.12),transparent_70%)] p-4">
+          <h2 className="spooky-text font-spooky text-3xl tracking-wide text-pumpkin">Fading away</h2>
+          <p className="mb-3 text-sm text-muted">Not seen in over three weeks</p>
           <div className="grid grid-cols-4 gap-2">
             {ghosts.map((g) => (
               <PersonCard key={g.id} name={g.name} days={g.daysSince} link={`/person?id=${g.id}`} />

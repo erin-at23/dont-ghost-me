@@ -55,7 +55,7 @@ function ShowAndScan() {
       <p className="text-center text-xl">{NAMES[me]}</p>
       {scanning ? <Scanner onScan={onScan} onError={setErr} /> : (
         <button onClick={() => { setErr(""); setScanning(true); }}
-          className="rounded-2xl bg-accent py-4 text-xl font-semibold text-black">Scan their code</button>
+          className="rounded-2xl bg-accent py-4 text-xl font-semibold text-white">Scan their code</button>
       )}
       {scanning && <button onClick={() => setScanning(false)} className="text-base text-muted underline">Cancel</button>}
       {err && <p className="text-lg text-red-400">{err}</p>}
@@ -96,15 +96,15 @@ function Accept({ from }: { from: string }) {
   if (!done) {
     return (
       <div className="flex flex-col gap-4 py-6 text-center">
-        <p className="text-2xl">Connect with <span className="text-accent">{NAMES[from] ?? from}</span>?</p>
+        <p className="text-2xl">Connect with <span className="text-accent-ink">{NAMES[from] ?? from}</span>?</p>
         <button onClick={connect} disabled={busy}
-          className="rounded-2xl bg-accent py-5 text-2xl font-semibold text-black">Connect</button>
+          className="rounded-2xl bg-accent py-5 text-2xl font-semibold text-white">Connect</button>
       </div>
     );
   }
   return (
     <div className="rise-in flex flex-col gap-4">
-      <p className="text-2xl">You and <span className="text-accent">{NAMES[from]}</span> are connected.</p>
+      <p className="text-2xl">You and <span className="text-accent-ink">{NAMES[from]}</span> are connected.</p>
       <p className="text-lg text-muted">Your agents will quietly look for times you&apos;re both around.</p>
       {s && <WantsClose state={s} onChange={refresh} />}
     </div>

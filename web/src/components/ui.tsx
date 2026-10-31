@@ -38,11 +38,14 @@ export function Shell({ title, children, offline }: { title: string; children: R
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-28 pt-6">
       <header className="mb-5 flex items-center justify-between gap-3">
-        <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-ink">Don&apos;t Ghost</p>
+          <h1 className="font-serif text-4xl font-semibold tracking-tight">{title}</h1>
+        </div>
         <div className="flex rounded-full border border-line p-1 text-sm">
           {(["erin", "partner"] as const).map((u) => (
             <Link key={u} href={swap(u)} replace
-              className={`rounded-full px-3 py-1 ${me === u ? "bg-accent text-black font-semibold" : "text-muted"}`}>
+              className={`rounded-full px-3 py-1 ${me === u ? "bg-accent text-white font-semibold" : "text-muted"}`}>
               {NAMES[u]}
             </Link>
           ))}
@@ -70,7 +73,7 @@ function Nav() {
       <div className="mx-auto flex max-w-md">
         {items.map((it) => (
           <Link key={it.path} href={href(it.path)}
-            className={`flex-1 py-4 text-center text-lg ${path === it.path ? "text-accent font-semibold" : "text-muted"}`}>
+            className={`flex-1 py-4 text-center text-lg ${path === it.path ? "text-accent-ink font-semibold" : "text-muted"}`}>
             {it.label}
           </Link>
         ))}
@@ -84,11 +87,13 @@ export function PersonCard({ name, days, subtitle, link }: { name: string; days:
   const { href } = useMe();
   if (days > GHOST_DAYS) {
     return (
-      <Link href={href(link)} className="rise-in flex flex-col items-center gap-1 rounded-2xl p-3 text-muted"
-        style={{ opacity: Math.max(0.3, 0.7 - (days - GHOST_DAYS) / 80) }}>
-        <GhostIcon className="float h-10 w-10" />
-        <span className="text-base">{name}</span>
-        <span className="text-xs">{days}d</span>
+      <Link href={href(link)} className="rise-in flex flex-col items-center gap-1 rounded-2xl p-2"
+        style={{ opacity: Math.max(0.45, 0.95 - (days - GHOST_DAYS) / 80) }}>
+        <span className="haunt ghost-glow text-foreground/90" style={{ animationDelay: `${(name.length % 5) * 0.4}s` }}>
+          <GhostIcon className="h-12 w-12" />
+        </span>
+        <span className="spooky-text font-spooky text-lg tracking-wide text-pumpkin">{name}</span>
+        <span className="text-xs text-muted">{days} days</span>
       </Link>
     );
   }
@@ -97,11 +102,11 @@ export function PersonCard({ name, days, subtitle, link }: { name: string; days:
     <Link href={href(link)}
       className="rise-in flex items-center gap-4 rounded-2xl border border-line bg-card p-4 transition-all duration-700"
       style={{ opacity: fade, filter: `grayscale(${Math.min(1, days / GHOST_DAYS)})` }}>
-      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent/20 text-2xl font-semibold text-accent">
+      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent/20 font-serif text-2xl font-semibold text-accent-ink ring-1 ring-accent/40">
         {name[0]}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="text-xl font-semibold">{name}</div>
+        <div className="font-serif text-2xl font-semibold">{name}</div>
         <div className="truncate text-base text-muted">{subtitle ?? daysLabel(days)}</div>
       </div>
       <div className="text-sm text-muted">{days}d</div>
@@ -120,10 +125,10 @@ export function ProposalPopup({ state, onDone }: { state: StateView; onDone: () 
     try { await post("/api/respond", { as: me, answer: a }); } finally { setBusy(false); onDone(); }
   };
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center">
-      <div className="rise-in w-full max-w-md rounded-3xl border border-line bg-card p-6">
-        <p className="text-base text-accent">Your agents found a time</p>
-        <h2 className="mt-2 text-2xl font-semibold leading-snug">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/20 p-4 sm:items-center">
+      <div className="rise-in w-full max-w-md rounded-3xl border border-white/10 border-t-4 border-t-accent bg-raised p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent-ink">Your agents found a time</p>
+        <h2 className="mt-2 font-serif text-3xl font-semibold leading-snug">
           {p.place} with {state.other.name}
         </h2>
         <p className="mt-1 text-xl">{fmtWhen(p.at)}</p>
@@ -131,9 +136,9 @@ export function ProposalPopup({ state, onDone }: { state: StateView; onDone: () 
         {p.usedMyPrivateNote && <PrivateNoteBadge />}
         <div className="mt-6 flex gap-3">
           <button disabled={busy} onClick={() => answer("no")}
-            className="flex-1 rounded-2xl border border-line py-4 text-xl text-muted">Not now</button>
+            className="flex-1 rounded-2xl border border-white/15 py-4 text-xl text-foreground/80">Not now</button>
           <button disabled={busy} onClick={() => answer("yes")}
-            className="flex-1 rounded-2xl bg-accent py-4 text-xl font-semibold text-black">Yes</button>
+            className="flex-1 rounded-2xl bg-accent py-4 text-xl font-semibold text-white">Yes</button>
         </div>
       </div>
     </div>
@@ -142,7 +147,7 @@ export function ProposalPopup({ state, onDone }: { state: StateView; onDone: () 
 
 export function PrivateNoteBadge() {
   return (
-    <span className="mt-3 inline-block rounded-full border border-accent/40 px-3 py-1 text-sm text-accent">
+    <span className="mt-3 inline-block rounded-full border border-accent/40 px-3 py-1 text-sm text-accent-ink">
       Used your private note
     </span>
   );
@@ -160,9 +165,9 @@ export function BriefCard({ state, proposal }: { state: StateView; proposal: Pro
     return () => { alive = false; };
   }, [me, state.other.id, proposal.id]);
   return (
-    <div className="rise-in rounded-3xl border border-accent/50 bg-accent/10 p-5">
-      <p className="text-base text-accent">It&apos;s on</p>
-      <h2 className="mt-1 text-2xl font-semibold">{state.other.name} · {proposal.place}</h2>
+    <div className="rise-in rounded-3xl border border-accent/50 bg-gradient-to-br from-accent/25 to-card p-5">
+      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent-ink">It&apos;s on</p>
+      <h2 className="mt-1 font-serif text-3xl font-semibold">{state.other.name} · {proposal.place}</h2>
       <p className="text-xl">{fmtWhen(proposal.at)}</p>
       {proposal.usedMyPrivateNote && <PrivateNoteBadge />}
       <p className="mt-4 text-lg leading-relaxed">{brief ?? "Writing your brief..."}</p>

@@ -85,7 +85,7 @@ export default function Voice() {
       {!typing ? (
         <div className="flex flex-col items-center gap-4 py-4">
           <button onClick={phase === "listening" ? stop : start} disabled={busy}
-            className={`h-40 w-40 rounded-full text-2xl font-semibold transition-all ${phase === "listening" ? "scale-105 bg-accent text-black animate-pulse" : "border-2 border-accent text-accent"} disabled:opacity-40`}>
+            className={`h-40 w-40 rounded-full text-2xl font-semibold transition-all ${phase === "listening" ? "scale-105 bg-accent text-white animate-pulse" : "border-2 border-accent text-accent-ink"} disabled:opacity-40`}>
             {phase === "listening" ? "Stop" : "Record"}
           </button>
           <p className="text-xl">{status}</p>
@@ -97,7 +97,7 @@ export default function Voice() {
             placeholder="We met at... they're into..."
             className="rounded-2xl border border-line bg-card p-4 text-lg" />
           <button disabled={busy || !typed.trim()} onClick={() => remember(typed).catch(fail)}
-            className="rounded-2xl bg-accent py-4 text-xl font-semibold text-black disabled:opacity-40">
+            className="rounded-2xl bg-accent py-4 text-xl font-semibold text-white disabled:opacity-40">
             {busy ? "Remembering..." : "Remember this"}
           </button>
           <button onClick={() => setTyping(false)} className="text-base text-muted underline">Use voice instead</button>

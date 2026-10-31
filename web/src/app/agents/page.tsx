@@ -7,7 +7,7 @@ import { NAMES } from "@/mocks";
 
 // Big-screen view of the agents talking. One color per agent.
 const ERIN_AGENT = `${NAMES.erin}'s agent`;
-const color = (from: string) => (from === ERIN_AGENT ? "text-sky-300 border-sky-300/40" : "text-accent border-accent/40");
+const color = (from: string) => (from === ERIN_AGENT ? "text-sandstone border-sandstone/40" : "text-accent-ink border-accent/40");
 const side = (from: string) => (from === ERIN_AGENT ? "self-start" : "self-end text-right");
 
 export default function Agents() {
@@ -19,7 +19,7 @@ export default function Agents() {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-8">
       <header className="mb-8 flex items-baseline justify-between">
-        <h1 className="text-4xl font-semibold md:text-5xl">Live agents</h1>
+        <h1 className="font-serif text-5xl font-semibold md:text-6xl">Live agents</h1>
         <span className="text-lg text-muted">{offline ? "Reconnecting..." : "● live"}</span>
       </header>
       <div className="flex flex-1 flex-col gap-5">
@@ -27,7 +27,7 @@ export default function Agents() {
         {s?.relayLog.map((l, i) => (
           <div key={`${l.at}-${i}`} className={`rise-in max-w-[80%] ${side(l.from)}`}>
             <div className={`mb-1 text-lg font-semibold ${color(l.from).split(" ")[0]}`}>{l.from}</div>
-            <div className={`rounded-3xl border bg-card px-6 py-4 text-2xl leading-snug md:text-3xl ${color(l.from).split(" ")[1]}`}>
+            <div className={`rounded-3xl border bg-card px-6 py-4 text-left text-2xl leading-snug md:text-3xl ${color(l.from).split(" ")[1]}`}>
               {l.text}
             </div>
           </div>

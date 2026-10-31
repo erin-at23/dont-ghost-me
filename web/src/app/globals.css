@@ -1,30 +1,44 @@
 @import "tailwindcss";
 
-/* Dark only, one accent. */
+/* Dark, warm, Stanford-ish: cardinal accent on warm charcoal, sandstone highlights.
+   Halloween colors (pumpkin) are used only for ghosts. */
 :root {
-  --background: #0b0b10;
-  --foreground: #ececf1;
-  --card: #16161e;
-  --line: #262632;
-  --muted: #8b8b9a;
-  --accent: #a78bfa;
+  --background: #13100f;
+  --foreground: #f4efe9;
+  --card: #1d1917;
+  --raised: #2a2422;
+  --line: #342d2a;
+  --muted: #a89f97;
+  --accent: #b83a4b;      /* Stanford cardinal (bright), for fills */
+  --accent-ink: #e98c97;  /* same hue, readable as text on dark */
+  --sandstone: #d2c295;
+  --pumpkin: #f28c28;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
+  --color-raised: var(--raised);
   --color-line: var(--line);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-sandstone: var(--sandstone);
+  --color-pumpkin: var(--pumpkin);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-serif-display);
+  --font-spooky: var(--font-spooky-display);
 }
 
 html { color-scheme: dark; }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(900px 420px at 50% -160px, rgba(140, 21, 21, 0.35), transparent 70%),
+    var(--background);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   font-size: 18px;
@@ -36,11 +50,14 @@ body {
 }
 .rise-in { animation: rise-in 0.35s ease-out both; }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+/* Ghosts: drift and wobble, with a pumpkin glow. */
+@keyframes haunt {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-6px) rotate(3deg); }
 }
-.float { animation: float 3s ease-in-out infinite; }
+.haunt { animation: haunt 3.2s ease-in-out infinite; }
+.ghost-glow { filter: drop-shadow(0 0 10px rgba(242, 140, 40, 0.55)); }
+.spooky-text { text-shadow: 0 0 8px rgba(242, 140, 40, 0.6); }
 
 @keyframes blink {
   0%, 80%, 100% { opacity: 0.2; }
