@@ -161,5 +161,55 @@
       "lastSeenAt": "2026-09-03T12:00:00-07:00",
       "oneLiner": "from Toronto, hockey fan"
     }
+  ],
+  "partnerPeople": [
+    {
+      "personId": "ben-carter",
+      "name": "Ben Carter",
+      "metAt": "2026-09-06T12:00:00-07:00",
+      "metPlace": "Wilbur dining",
+      "lastSeenAt": "2026-10-27T12:00:00-07:00",
+      "oneLiner": "from Denver, loves skiing"
+    },
+    {
+      "personId": "mei-sato",
+      "name": "Mei Sato",
+      "metAt": "2026-09-06T12:00:00-07:00",
+      "metPlace": "Activities Fair",
+      "lastSeenAt": "2026-10-20T12:00:00-07:00",
+      "oneLiner": "runs a design club"
+    },
+    {
+      "personId": "lucas-silva",
+      "name": "Lucas Silva",
+      "metAt": "2026-09-06T12:00:00-07:00",
+      "metPlace": "Lake Lag bonfire",
+      "lastSeenAt": "2026-10-12T12:00:00-07:00",
+      "oneLiner": "plays guitar"
+    },
+    {
+      "personId": "nina-petrova",
+      "name": "Nina Petrova",
+      "metAt": "2026-09-06T12:00:00-07:00",
+      "metPlace": "PWR 1 class",
+      "lastSeenAt": "2026-10-04T12:00:00-07:00",
+      "oneLiner": "wants to be a journalist"
+    },
+    {
+      "personId": "arjun-mehta",
+      "name": "Arjun Mehta",
+      "metAt": "2026-09-06T12:00:00-07:00",
+      "metPlace": "CS106B section",
+      "lastSeenAt": "2026-09-25T12:00:00-07:00",
+      "oneLiner": "into competitive programming"
+    },
+    {
+      "personId": "emma-davis",
+      "name": "Emma Davis",
+      "metAt": "2026-09-06T12:00:00-07:00",
+      "metPlace": "FroSoCo movie night",
+      "lastSeenAt": "2026-09-14T12:00:00-07:00",
+      "oneLiner": "bakes amazing cookies"
+    }
   ]
 }

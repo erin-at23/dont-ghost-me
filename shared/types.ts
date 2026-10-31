@@ -37,6 +37,7 @@ export interface Proposal {
   reason: string // safe to show both people
   status: "pending" | "accepted" | "declined"
   responses: Record<UserId, "yes" | "no" | null>
+  usedNoteOf?: UserId // whose private note shaped the idea (badge). Private note text is never included.
 }
 
 export interface RelayLogLine { at: string; from: string; to: string; text: string }

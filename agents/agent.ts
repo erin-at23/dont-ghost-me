@@ -5,7 +5,7 @@ import OpenAI from "openai"
 import { actors } from "./generated"
 
 type Slot = { start: string; end: string; place: string }
-type Payload = { conv: string; type: "hello" | "overlap" | "agree" | "decline" | "done"; slots?: Slot[]; slot?: Slot; idea?: string; reason?: string }
+type Payload = { conv: string; type: "hello" | "overlap" | "agree" | "decline" | "done"; slots?: Slot[]; slot?: Slot; idea?: string; reason?: string; usedNote?: boolean }
 type Bus = { send(from: string, to: string, text: string, data: Payload): Promise<void>; on(handle: string, fn: (from: string, data: Payload) => void): void; mode: string }
 
 const USERS = ["erin", "partner"]
@@ -74,7 +74,9 @@ function overlaps(a: Slot[], b: Slot[]): Slot[] {
 async function privateIdeaRaw(owner: string, other: string, slot: Slot): Promise<string> {
   const p: any = await actors.Person.get(`${owner}.${other}`).get()
   const shared = [...(p?.commonalities || []), ...(p?.interests || [])].slice(0, 6)
-  const fallback = shared.length ? `${shared[0]} near ${slot.place}` : `grab food at ${slot.place}`
+  const lowKey = /stress|tired|midterm|busy|break/i.test(p?.impression || "")
+  const base = shared.length ? `${shared[0]} near ${slot.place}` : `grab food at ${slot.place}`
+  const fallback = lowKey ? `a low-key ${shared.join(" ").match(/boba|coffee|tea|walk/i)?.[0] || "boba"} break near ${slot.place}, no pressure` : base
   if (!openai) return fallback
   const r = await openai.chat.completions.create({
     model: "gpt-4o-mini",
@@ -98,6 +100,10 @@ async function safeReasonRaw(ideaA: string, ideaB: string, slot: Slot): Promise<
   return r.choices[0].message.content?.trim() || `You'll both be at ${slot.place}. ${ideaB}`
 }
 
+async function hasPrivateNote(owner: string, other: string) {
+  const p: any = await actors.Person.get(`${owner}.${other}`).get()
+  return !!(p?.impression || (p?.facts || []).length)
+}
 async function privateIdea(owner: string, other: string, slot: Slot) {
   try { return await privateIdeaRaw(owner, other, slot) } catch (e: any) { console.warn("OpenAI failed, using fallback:", e?.message); openai = null; return privateIdeaRaw(owner, other, slot) }
 }
@@ -142,13 +148,16 @@ for (const me of USERS) {
         if (!ov.length) return say(me, other, `No shared place/time this week. I'll keep watching and ping you when your paths cross. 👀`, { conv: d.conv, type: "decline" })
         const slot = ov[0]
         const idea = await privateIdea(me, other, slot)
-        return say(me, other, `Good news — they'll BOTH be at ${slot.place} ${fmt(slot.start)}! From my side (private notes stay private 🤫), idea: ${idea}`, { conv: d.conv, type: "overlap", slot, idea })
+        const usedNote = await hasPrivateNote(me, other)
+        return say(me, other, `Good news — they'll BOTH be at ${slot.place} ${fmt(slot.start)}! From my side (private notes stay private 🤫), idea: ${idea}`, { conv: d.conv, type: "overlap", slot, idea, usedNote })
       }
       if (d.type === "overlap" && d.slot) {
         const ideaMine = await privateIdea(me, other, d.slot)
         const reason = await safeReason(ideaMine, d.idea || "", d.slot)
         await say(me, other, `Love it. Locking in ${fmt(d.slot.start)} at ${d.slot.place}: "${reason}" Sending to both humans now. 📲`, { conv: d.conv, type: "agree", slot: d.slot, reason })
-        await actors.Friendship.get(fid(me, other)).propose({ at: d.slot.start, place: d.slot.place, reason })
+        // Badge: prefer the replying agent's note (that's the idea we build on), else ours.
+        const usedNoteOf = d.usedNote ? other : (await hasPrivateNote(me, other)) ? me : undefined
+        await actors.Friendship.get(fid(me, other)).propose({ at: d.slot.start, place: d.slot.place, reason, usedNoteOf })
         return
       }
       if (d.type === "agree") return say(me, other, `🤝 Done. Don't ghost!`, { conv: d.conv, type: "done" })
