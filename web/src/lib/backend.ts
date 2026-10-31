@@ -178,9 +178,8 @@ export const mockBackend: Backend = {
 
 // ---------------- live (Block 3+) ----------------
 
-const notYet = (name: string) => async (): Promise<never> => {
-  throw new Error(`liveBackend.${name} is not implemented yet (Block 3/5). Use BACKEND=mock.`);
-};
+// Briefs aren't stored in an actor, so the web server caches them (key `${proposalId}:${as}`).
+const briefCache = ((globalThis as unknown as { __ghostBriefs?: Map<string, string> }).__ghostBriefs ??= new Map());
 
 const FRIENDSHIP_ID = "erin__partner";
 
@@ -204,7 +203,7 @@ export const liveBackend: Backend = {
       meU.getWantsClose(other), meU.getPeople(), actors.Person.get(`${as}.${other}`).get(),
     ]);
     const lastSeenAt = fr.lastSeenAt || fr.createdAt || new Date().toISOString();
-    const proposal = proposalFor(fr.proposal, as, null); // no "used note" field in the contract yet
+    const proposal = proposalFor(fr.proposal, as, fr.proposal?.usedNoteOf ?? null);
     const ghosts = (people ?? [])
       .filter((x) => x.personId !== other)
       .map((x) => ({ id: x.personId, name: x.name, lastSeenAt: x.lastSeenAt, daysSince: daysSince(x.lastSeenAt), oneLiner: x.oneLiner, profile: null }))
@@ -220,16 +219,69 @@ export const liveBackend: Backend = {
       nudge: proposal ? undefined : fr.nudge?.text,
     };
   },
-  connect: notYet("connect"),
-  setWantsClose: notYet("setWantsClose"),
-  respond: notYet("respond"),
-  getProfile: notYet("getProfile"),
-  applyExtraction: notYet("applyExtraction"),
-  getBrief: notYet("getBrief"),
-  saveBrief: notYet("saveBrief"),
-  reset: notYet("reset"),
-  simulateDaysPassed: notYet("simulateDaysPassed"),
-  findTime: notYet("findTime"),
+
+  async connect(from, to) {
+    await actors.Friendship.get(FRIENDSHIP_ID).befriend(from, to);
+    return (await liveBackend.getState(to)).friendship;
+  },
+
+  async setWantsClose(as, other, value) {
+    await actors.User.get(as).setWantsClose(other, value);
+  },
+
+  async respond(as, answer) {
+    const f = actors.Friendship.get(FRIENDSHIP_ID);
+    const before = (await f.get()).proposal;
+    if (!before || before.status !== "pending") return;
+    const after = await f.respond(as, answer);
+    // The actor doesn't record the meetup itself; do it once, on the yes that completes it.
+    if (after?.status === "accepted") await f.recordMeetup(after.at, after.place);
+  },
+
+  async getProfile(as, other) {
+    return actors.Person.get(`${as}.${other}`).get();
+  },
+
+  async applyExtraction(as, other, x, meta) {
+    await actors.Person.get(`${as}.${other}`).applyExtraction(x, meta);
+  },
+
+  async getBrief(as) {
+    const p = (await actors.Friendship.get(FRIENDSHIP_ID).get()).proposal;
+    if (!p || p.status !== "accepted") return null;
+    return { proposalId: p.id, brief: briefCache.get(`${p.id}:${as}`) ?? null };
+  },
+
+  async saveBrief(as, proposalId, brief) {
+    briefCache.set(`${proposalId}:${as}`, brief);
+  },
+
+  /** Clears proposal, meetups and relay log, then re-creates the friendship.
+   *  Keeps everyone's private notes (Person actors) and friends lists. */
+  async reset() {
+    const f = actors.Friendship.get(FRIENDSHIP_ID);
+    await f.reset();
+    await f.befriend("erin", "partner");
+    briefCache.clear();
+  },
+
+  async simulateDaysPassed(days) {
+    await actors.Friendship.get(FRIENDSHIP_ID).simulateDaysPassed(days);
+  },
+
+  /** Asks Erin's agents (AGENT_URL) to negotiate. They write the relay log and proposal to the actors. */
+  async findTime(as) {
+    const base = process.env.AGENT_URL?.trim().replace(/\/+$/, "");
+    if (!base) throw new Error("AGENT_URL is not set in .env.local (Erin's agent server, e.g. https://<tunnel>/)");
+    const res = await fetch(`${base}/find-time`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ from: as, to: otherOf(as) }),
+      signal: AbortSignal.timeout(15_000),
+    });
+    const json = (await res.json().catch(() => ({}))) as { ok?: boolean; reason?: string };
+    if (!res.ok || json.ok === false) throw new Error(`Agents: ${json.reason ?? `HTTP ${res.status}`}`);
+  },
 };
 
 export function getBackend(): Backend {
