@@ -19,12 +19,12 @@ export default function Home() {
     <Shell title="Your people" offline={offline}>
       {p?.status === "accepted" && <BriefCard state={s} proposal={p} />}
       {p?.status === "pending" && p.myResponse === "yes" && (
-        <div className="rise-in rounded-2xl border border-line bg-card p-4 text-lg">
+        <div className="rise-in rounded-3xl border border-line bg-card p-4 text-lg">
           You&apos;re in for <span className="text-accent-ink">{p.place}</span>. We&apos;ll confirm once it&apos;s set.
         </div>
       )}
       {s.nudge && !p && (
-        <div className="rise-in rounded-2xl border border-accent/40 p-4 text-lg text-accent-ink">{s.nudge}</div>
+        <div className="rise-in rounded-3xl border border-accent/30 bg-accent/10 p-4 text-lg text-accent-ink">{s.nudge}</div>
       )}
 
       <PersonCard
@@ -38,8 +38,8 @@ export default function Home() {
       ))}
 
       {ghosts.length > 0 && (
-        <section className="mt-4 rounded-3xl border border-pumpkin/20 bg-[radial-gradient(circle_at_50%_0%,rgba(242,140,40,0.12),transparent_70%)] p-4">
-          <h2 className="spooky-text font-spooky text-3xl tracking-wide text-pumpkin">Fading away</h2>
+        <section className="mt-4 rounded-3xl border border-line bg-[radial-gradient(circle_at_50%_0%,rgba(124,108,255,0.14),transparent_70%)] p-5">
+          <h2 className="text-xl font-semibold tracking-tight">Fading away <span className="text-muted font-normal">· {ghosts.length}</span></h2>
           <p className="mb-3 text-sm text-muted">Not seen in over three weeks</p>
           <div className="grid grid-cols-4 gap-2">
             {ghosts.map((g) => (

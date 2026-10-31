@@ -19,15 +19,15 @@ export default function Agents() {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-8">
       <header className="mb-8 flex items-baseline justify-between">
-        <h1 className="font-serif text-5xl font-semibold md:text-6xl">Live agents</h1>
-        <span className="text-lg text-muted">{offline ? "Reconnecting..." : "● live"}</span>
+        <div><p className="mb-1 text-base text-muted">Don&apos;t Ghost Me · via Agent Relay</p><h1 className="font-serif text-5xl font-semibold md:text-6xl">Agents, live</h1></div>
+        <span className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-4 py-2 text-base text-muted">{offline ? "Reconnecting…" : <><span className="live-dot h-2.5 w-2.5 rounded-full bg-sandstone" /> live</>}</span>
       </header>
       <div className="flex flex-1 flex-col gap-5">
         {count === 0 && !s?.relayTyping && <p className="text-2xl text-muted">Waiting for the agents...</p>}
         {s?.relayLog.map((l, i) => (
           <div key={`${l.at}-${i}`} className={`rise-in max-w-[80%] ${side(l.from)}`}>
             <div className={`mb-1 text-lg font-semibold ${color(l.from).split(" ")[0]}`}>{l.from}</div>
-            <div className={`rounded-3xl border bg-card px-6 py-4 text-left text-2xl leading-snug md:text-3xl ${color(l.from).split(" ")[1]}`}>
+            <div className={`rounded-[28px] border bg-card px-6 py-4 text-left text-2xl leading-snug md:text-[28px] ${color(l.from).split(" ")[1]}`}>
               {l.text}
             </div>
           </div>
@@ -35,7 +35,7 @@ export default function Agents() {
         {s?.relayTyping && (
           <div className={`rise-in ${side(s.relayTyping)}`}>
             <div className={`mb-1 text-lg font-semibold ${color(s.relayTyping).split(" ")[0]}`}>{s.relayTyping}</div>
-            <div className="inline-flex gap-2 rounded-3xl border border-line bg-card px-6 py-5 text-3xl">
+            <div className="inline-flex gap-2 rounded-[28px] border border-line bg-card px-6 py-5 text-2xl text-muted">
               <span className="dot">●</span><span className="dot">●</span><span className="dot">●</span>
             </div>
           </div>

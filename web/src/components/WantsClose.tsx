@@ -14,12 +14,12 @@ export function WantsClose({ state, onChange }: { state: StateView; onChange: ()
   };
   return (
     <button onClick={toggle} disabled={busy}
-      className="flex items-center justify-between rounded-2xl border border-line bg-card p-4 text-left">
+      className="flex items-center justify-between rounded-3xl border border-line bg-card p-4 text-left">
       <span>
         <span className="block text-lg">Want to stay close</span>
         <span className="block text-sm text-muted">Only you can see this</span>
       </span>
-      <span className={`flex h-8 w-14 items-center rounded-full p-1 transition-colors ${on ? "bg-accent" : "bg-line"}`}>
+      <span className={`flex h-8 w-14 items-center rounded-full p-1 transition-colors ${on ? "bg-accent" : "bg-white/10"}`}>
         <span className={`h-6 w-6 rounded-full bg-white transition-transform ${on ? "translate-x-6" : ""}`} />
       </span>
     </button>

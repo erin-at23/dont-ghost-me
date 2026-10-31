@@ -79,13 +79,13 @@ export default function Voice() {
       <label className="flex items-center gap-3 text-lg text-muted">
         Where
         <input value={place} onChange={(e) => setPlace(e.target.value)}
-          className="flex-1 rounded-xl border border-line bg-card px-3 py-2 text-foreground" />
+          className="flex-1 rounded-2xl border border-line bg-card px-4 py-2.5 text-foreground" />
       </label>
 
       {!typing ? (
         <div className="flex flex-col items-center gap-4 py-4">
           <button onClick={phase === "listening" ? stop : start} disabled={busy}
-            className={`h-40 w-40 rounded-full text-2xl font-semibold transition-all ${phase === "listening" ? "scale-105 bg-accent text-white animate-pulse" : "border-2 border-accent text-accent-ink"} disabled:opacity-40`}>
+            className={`h-40 w-40 rounded-full text-xl font-semibold transition-all ${phase === "listening" ? "scale-105 bg-accent text-white animate-pulse" : "border border-white/15 bg-card text-foreground shadow-[0_0_60px_rgba(124,108,255,0.25)]"} disabled:opacity-40`}>
             {phase === "listening" ? "Stop" : "Record"}
           </button>
           <p className="text-xl">{status}</p>

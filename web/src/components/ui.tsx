@@ -38,21 +38,23 @@ export function Shell({ title, children, offline }: { title: string; children: R
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-28 pt-6">
       <header className="mb-5 flex items-center justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-ink">Don&apos;t Ghost Me</p>
-          <h1 className="font-serif text-4xl font-semibold tracking-tight">{title}</h1>
+        <div className="min-w-0">
+          <p className="mb-1 inline-flex items-center gap-1.5 text-[13px] font-medium text-muted">
+            <GhostIcon className="h-3.5 w-3.5 text-accent-ink" /> Don&apos;t Ghost Me
+          </p>
+          <h1 className="truncate font-serif text-[34px] font-semibold leading-tight">{title}</h1>
         </div>
-        <div className="flex rounded-full border border-line p-1 text-sm">
+        <div className="flex shrink-0 rounded-full border border-line bg-card p-1 text-sm">
           {(["erin", "partner"] as const).map((u) => (
             <Link key={u} href={swap(u)} replace
-              className={`rounded-full px-3 py-1 ${me === u ? "bg-accent text-white font-semibold" : "text-muted"}`}>
+              className={`rounded-full px-3 py-1.5 transition-colors ${me === u ? "bg-white text-black font-semibold" : "text-muted hover:text-foreground"}`}>
               {NAMES[u]}
             </Link>
           ))}
         </div>
       </header>
       {offline && (
-        <div className="mb-3 rounded-xl border border-line px-3 py-2 text-sm text-muted">Reconnecting...</div>
+        <div className="mb-3 rounded-2xl border border-line bg-card px-4 py-2 text-sm text-muted">Reconnecting…</div>
       )}
       <main className="flex flex-1 flex-col gap-4">{children}</main>
       <Nav />
@@ -69,11 +71,11 @@ function Nav() {
     { path: "/connect", label: "Connect" },
   ];
   return (
-    <nav className="fixed inset-x-0 bottom-0 border-t border-line bg-background/90 backdrop-blur">
-      <div className="mx-auto flex max-w-md">
+    <nav className="fixed inset-x-0 bottom-5 z-40 px-4">
+      <div className="mx-auto flex max-w-sm gap-1 rounded-full border border-line bg-[rgba(20,20,28,0.75)] p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl">
         {items.map((it) => (
           <Link key={it.path} href={href(it.path)}
-            className={`flex-1 py-4 text-center text-lg ${path === it.path ? "text-accent-ink font-semibold" : "text-muted"}`}>
+            className={`flex-1 rounded-full py-3 text-center text-[15px] font-medium transition-colors ${path === it.path ? "bg-white/10 text-foreground" : "text-muted hover:text-foreground"}`}>
             {it.label}
           </Link>
         ))}
@@ -89,27 +91,27 @@ export function PersonCard({ name, days, subtitle, link }: { name: string; days:
     return (
       <Link href={href(link)} className="rise-in flex flex-col items-center gap-1 rounded-2xl p-2"
         style={{ opacity: Math.max(0.45, 0.95 - (days - GHOST_DAYS) / 80) }}>
-        <span className="haunt ghost-glow text-foreground/90" style={{ animationDelay: `${(name.length % 5) * 0.4}s` }}>
-          <GhostIcon className="h-12 w-12" />
+        <span className="haunt ghost-glow text-pumpkin/90" style={{ animationDelay: `${(name.length % 5) * 0.4}s` }}>
+          <GhostIcon className="h-10 w-10" />
         </span>
-        <span className="spooky-text font-spooky text-lg tracking-wide text-pumpkin">{name.split(" ")[0]}</span>
-        <span className="text-xs text-muted">{days} days</span>
+        <span className="text-sm font-medium text-foreground/80">{name.split(" ")[0]}</span>
+        <span className="text-xs text-muted">{days}d</span>
       </Link>
     );
   }
   const fade = 1 - (days / GHOST_DAYS) * 0.55;
   return (
     <Link href={href(link)}
-      className="rise-in flex items-center gap-4 rounded-2xl border border-line bg-card p-4 transition-all duration-700"
+      className="rise-in flex items-center gap-4 rounded-3xl border border-line bg-card p-4 transition-all duration-700 hover:border-white/20"
       style={{ opacity: fade, filter: `grayscale(${Math.min(1, days / GHOST_DAYS)})` }}>
-      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent/20 font-serif text-2xl font-semibold text-accent-ink ring-1 ring-accent/40">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent/60 to-sandstone/40 text-xl font-semibold text-white ring-1 ring-white/15">
         {name[0]}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="font-serif text-2xl font-semibold">{name}</div>
-        <div className="truncate text-base text-muted">{subtitle ?? daysLabel(days)}</div>
+        <div className="font-serif text-xl font-semibold">{name}</div>
+        <div className="truncate text-[15px] text-muted">{subtitle ?? daysLabel(days)}</div>
       </div>
-      <div className="text-sm text-muted">{days}d</div>
+      <div className="rounded-full border border-line px-2.5 py-1 text-xs tabular-nums text-muted">{days}d</div>
     </Link>
   );
 }
@@ -125,9 +127,9 @@ export function ProposalPopup({ state, onDone }: { state: StateView; onDone: () 
     try { await post("/api/respond", { as: me, answer: a }); } finally { setBusy(false); onDone(); }
   };
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/20 p-4 sm:items-center">
-      <div className="rise-in w-full max-w-md rounded-3xl border border-white/10 border-t-4 border-t-accent bg-raised p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent-ink">Your agents found a time</p>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 backdrop-blur-sm sm:items-center">
+      <div className="rise-in w-full max-w-md rounded-[28px] border border-white/10 bg-raised p-6 shadow-[0_30px_80px_rgba(0,0,0,0.6),0_0_0_1px_rgba(124,108,255,0.15)]">
+        <p className="inline-flex items-center gap-2 text-sm font-medium text-accent-ink"><span className="live-dot h-2 w-2 rounded-full bg-sandstone" />Your agents found a time</p>
         <h2 className="mt-2 font-serif text-3xl font-semibold leading-snug">
           {p.place} with {state.other.name}
         </h2>
@@ -136,9 +138,9 @@ export function ProposalPopup({ state, onDone }: { state: StateView; onDone: () 
         {p.usedMyPrivateNote && <PrivateNoteBadge />}
         <div className="mt-6 flex gap-3">
           <button disabled={busy} onClick={() => answer("no")}
-            className="flex-1 rounded-2xl border border-white/15 py-4 text-xl text-foreground/80">Not now</button>
+            className="flex-1 rounded-2xl border border-white/10 bg-white/5 py-4 text-lg font-medium text-foreground/80">Not now</button>
           <button disabled={busy} onClick={() => answer("yes")}
-            className="flex-1 rounded-2xl bg-accent py-4 text-xl font-semibold text-white">Yes</button>
+            className="flex-1 rounded-2xl bg-accent py-4 text-lg font-semibold text-white">Yes, let&apos;s go</button>
         </div>
       </div>
     </div>
@@ -147,8 +149,8 @@ export function ProposalPopup({ state, onDone }: { state: StateView; onDone: () 
 
 export function PrivateNoteBadge() {
   return (
-    <span className="mt-3 inline-block rounded-full border border-accent/40 px-3 py-1 text-sm text-accent-ink">
-      Used your private note
+    <span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-sm text-accent-ink">
+      <span aria-hidden>🔒</span> Used your private note
     </span>
   );
 }
@@ -165,8 +167,8 @@ export function BriefCard({ state, proposal }: { state: StateView; proposal: Pro
     return () => { alive = false; };
   }, [me, state.other.id, proposal.id]);
   return (
-    <div className="rise-in rounded-3xl border border-accent/50 bg-gradient-to-br from-accent/25 to-card p-5">
-      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent-ink">It&apos;s on</p>
+    <div className="rise-in rounded-3xl border border-white/10 bg-gradient-to-br from-accent/30 via-accent/10 to-sandstone/10 p-5 shadow-[0_20px_60px_rgba(107,91,255,0.2)]">
+      <p className="text-sm font-medium text-sandstone">It&apos;s on ✓</p>
       <h2 className="mt-1 font-serif text-3xl font-semibold">{state.other.name} · {proposal.place}</h2>
       <p className="text-xl">{fmtWhen(proposal.at)}</p>
       {proposal.usedMyPrivateNote && <PrivateNoteBadge />}
@@ -177,7 +179,7 @@ export function BriefCard({ state, proposal }: { state: StateView; proposal: Pro
 
 export function Chip({ children, i = 0 }: { children: ReactNode; i?: number }) {
   return (
-    <span className="rise-in inline-block rounded-full border border-line bg-card px-3 py-1.5 text-base"
+    <span className="rise-in inline-block rounded-full border border-line bg-white/5 px-3 py-1.5 text-[15px]"
       style={{ animationDelay: `${i * 80}ms` }}>
       {children}
     </span>
