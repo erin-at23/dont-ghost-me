@@ -92,7 +92,7 @@ export function PersonCard({ name, days, subtitle, link }: { name: string; days:
         <span className="haunt ghost-glow text-foreground/90" style={{ animationDelay: `${(name.length % 5) * 0.4}s` }}>
           <GhostIcon className="h-12 w-12" />
         </span>
-        <span className="spooky-text font-spooky text-lg tracking-wide text-pumpkin">{name}</span>
+        <span className="spooky-text font-spooky text-lg tracking-wide text-pumpkin">{name.split(" ")[0]}</span>
         <span className="text-xs text-muted">{days} days</span>
       </Link>
     );
