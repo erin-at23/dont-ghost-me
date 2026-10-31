@@ -1,9 +1,9 @@
 // Small helpers for API routes.
 import { connection } from "next/server";
-import { USERS, type UserId } from "./types";
+import { fromSlug, type UserId } from "./types";
 
 export function asUser(v: unknown): UserId {
-  return typeof v === "string" && (USERS as readonly string[]).includes(v) ? v : "partner";
+  return (typeof v === "string" && fromSlug(v)) || "partner";
 }
 
 export async function body<T = Record<string, unknown>>(req: Request): Promise<Partial<T>> {

@@ -5,6 +5,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Shell } from "@/components/ui";
 import { WantsClose } from "@/components/WantsClose";
+import { fromSlug, toSlug } from "@/lib/types";
 import type { StateView } from "@/lib/types";
 import { post, usePoll } from "@/lib/usePoll";
 import { useMe } from "@/lib/user";
@@ -16,11 +17,11 @@ export default function Connect() {
   const { me } = useMe();
   const params = useSearchParams();
   const router = useRouter();
-  const from = params.get("from");
+  const from = fromSlug(params.get("from"));
 
   // Opened from a phone camera scan: the scanner is whoever is NOT `from`.
   useEffect(() => {
-    if (from && (from === me || !params.get("as"))) router.replace(`/connect?from=${from}&as=${otherOf(from)}`);
+    if (from && (from === me || !params.get("as"))) router.replace(`/connect?from=${toSlug(from)}&as=${toSlug(otherOf(from))}`);
   }, [from, me, params, router]);
 
   return (
@@ -39,10 +40,10 @@ function ShowAndScan() {
 
   const onScan = (text: string) => {
     try {
-      const f = new URL(text).searchParams.get("from");
+      const f = fromSlug(new URL(text).searchParams.get("from"));
       if (!f) throw new Error("Not a Don't Ghost Me code");
       setScanning(false);
-      router.push(`/connect?from=${f}&as=${me}`);
+      router.push(`/connect?from=${toSlug(f)}&as=${toSlug(me)}`);
     } catch (e) { setErr((e as Error).message); }
   };
 
@@ -50,7 +51,7 @@ function ShowAndScan() {
     <>
       <p className="text-lg text-muted">Let them scan this, or scan theirs.</p>
       <div className="flex justify-center rounded-3xl bg-white p-6">
-        {origin && <QRCodeSVG value={`${origin}/connect?from=${me}`} size={240} />}
+        {origin && <QRCodeSVG value={`${origin}/connect?from=${toSlug(me)}`} size={240} />}
       </div>
       <p className="text-center text-xl">{NAMES[me]}</p>
       {scanning ? <Scanner onScan={onScan} onError={setErr} /> : (

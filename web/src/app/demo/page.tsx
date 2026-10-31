@@ -28,7 +28,7 @@ export default function Demo() {
       )}
       <div className="flex flex-wrap gap-4 text-lg text-accent-ink">
         <Link href="/?as=erin">Erin&apos;s home</Link>
-        <Link href="/?as=partner">Partner&apos;s home</Link>
+        <Link href="/?as=charlotte">Charlotte&apos;s home</Link>
         <Link href="/agents">Agents screen</Link>
       </div>
     </div>

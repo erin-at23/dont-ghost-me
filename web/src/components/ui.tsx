@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { post } from "@/lib/usePoll";
 import { useMe } from "@/lib/user";
+import { toSlug } from "@/lib/types";
 import type { ProposalView, StateView } from "@/lib/types";
 import { NAMES } from "@/mocks";
 
@@ -38,7 +39,7 @@ export function GhostIcon({ className = "h-8 w-8" }: { className?: string }) {
 export function Shell({ title, children, offline }: { title: string; children: ReactNode; offline?: boolean }) {
   const { me } = useMe();
   const path = usePathname();
-  const swap = (u: string) => `${path}?as=${u}`;
+  const swap = (u: string) => `${path}?as=${toSlug(u)}`;
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-28 pt-6">
       <header className="mb-5 flex items-center justify-between gap-3">
