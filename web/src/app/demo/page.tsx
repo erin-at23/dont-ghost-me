@@ -19,7 +19,7 @@ export default function Demo() {
       <h1 className="font-serif text-3xl font-semibold">Demo controls</h1>
       <button className={`${btn} border border-line`} onClick={run("Reset", "/api/demo/reset")}>Reset</button>
       <button className={`${btn} border border-line`} onClick={run("Simulate 21 days", "/api/demo/simulate", { days: 21 })}>Simulate 21 days</button>
-      <button className={`${btn} bg-accent text-white`} onClick={run("Find time", "/api/demo/find-time", { as: "partner" })}>Find time</button>
+      <button className={`${btn} bg-accent text-white`} onClick={run("Find time", "/api/demo/find-time", { as: "erin" }) /* Erin asks, so Charlotte's agent replies using her private note (badge on her phone) */}>Find time</button>
       <p className="min-h-7 text-lg text-muted">{msg}</p>
       {s && (
         <div className="rounded-2xl border border-line p-4 text-base text-muted">
