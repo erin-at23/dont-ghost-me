@@ -24,7 +24,10 @@ export default function Person() {
       <p className="text-lg text-muted">{daysLabel(days)}{profile && ` · first met at ${profile.firstMetPlace}`}</p>
       {isFriend && <WantsClose state={s} onChange={refresh} />}
       {!profile ? (
-        <p className="text-lg text-muted">No notes yet. Record a voice note after you meet.</p>
+        <>
+          {ghost?.oneLiner && <p className="font-serif text-2xl">{ghost.oneLiner}</p>}
+          <p className="text-lg text-muted">No notes yet. Record a voice note after you meet.</p>
+        </>
       ) : (
         <>
           {profile.impression && (

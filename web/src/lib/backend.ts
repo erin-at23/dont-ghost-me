@@ -1,4 +1,5 @@
-import type { Extraction, PersonProfile, StateView, UserId, ProposalView, Meeting } from "./types";
+import type { Extraction, PersonProfile, Proposal, StateView, UserId, ProposalView, Meeting, RelayLogLine } from "./types";
+import { actors } from "./actors";
 import { NAMES, relayScript, seedWorld, tomorrowAt, type MockWorld } from "@/mocks";
 
 export interface Backend {
@@ -29,19 +30,21 @@ const g = globalThis as unknown as { __ghostWorld?: MockWorld; __ghostTimers?: R
 const world = () => (g.__ghostWorld ??= seedWorld());
 const timers = () => (g.__ghostTimers ??= []);
 
+/** Proposal as `as` may see it. No rejection in the UI: a declined proposal,
+ *  or one I said "not now" to, is simply not sent. The other person's answer never is. */
+function proposalFor(p: Proposal | null | undefined, as: UserId, usedNoteOf: UserId | null): ProposalView | null {
+  if (!p || p.status === "declined" || p.responses[as] === "no") return null;
+  return {
+    id: p.id, at: p.at, place: p.place, reason: p.reason,
+    status: p.status === "accepted" ? "accepted" : "pending",
+    myResponse: p.responses[as] ?? null,
+    usedMyPrivateNote: usedNoteOf === as,
+  };
+}
+
 function friendshipView(w: MockWorld, as: UserId): StateView["friendship"] {
   const f = w.friendship;
-  const p = f.proposal;
-  let proposal: ProposalView | null = null;
-  // No rejection in the UI: a declined proposal, or one I said "not now" to, is simply not sent.
-  if (p && p.status !== "declined" && p.responses[as] !== "no") {
-    proposal = {
-      id: p.id, at: p.at, place: p.place, reason: p.reason,
-      status: p.status === "accepted" ? "accepted" : "pending",
-      myResponse: p.responses[as] ?? null,
-      usedMyPrivateNote: f.proposalUsedNoteOf === as,
-    };
-  }
+  const proposal = proposalFor(f.proposal, as, f.proposalUsedNoteOf);
   return { id: f.id, createdAt: f.createdAt, lastSeenAt: f.lastSeenAt, daysSince: daysSince(f.lastSeenAt), proposal, meetups: f.meetups };
 }
 
@@ -179,8 +182,44 @@ const notYet = (name: string) => async (): Promise<never> => {
   throw new Error(`liveBackend.${name} is not implemented yet (Block 3/5). Use BACKEND=mock.`);
 };
 
+const FRIENDSHIP_ID = "erin__partner";
+
+/** No typing signal from the actors, so: if the last line is under 4 s old and the
+ *  agents haven't said they're done, show the other agent as typing. */
+function inferTyping(log: RelayLogLine[], hasPending: boolean): string | null {
+  const last = log.at(-1);
+  if (!last || hasPending) return null;
+  if (Date.now() - new Date(last.at).getTime() > 4000) return null;
+  if (/done|don't ghost|another time|keep watching/i.test(last.text)) return null;
+  return last.to;
+}
+
 export const liveBackend: Backend = {
-  getState: notYet("getState"),
+  async getState(as) {
+    const other = otherOf(as);
+    const f = actors.Friendship.get(FRIENDSHIP_ID);
+    const meU = actors.User.get(as);
+    const [fr, relayLog, myProfile, otherProfile, wantsClose, people, profileOfOther] = await Promise.all([
+      f.get(), f.getRelayLog(), meU.getProfile(), actors.User.get(other).getProfile(),
+      meU.getWantsClose(other), meU.getPeople(), actors.Person.get(`${as}.${other}`).get(),
+    ]);
+    const lastSeenAt = fr.lastSeenAt || fr.createdAt || new Date().toISOString();
+    const proposal = proposalFor(fr.proposal, as, null); // no "used note" field in the contract yet
+    const ghosts = (people ?? [])
+      .filter((x) => x.personId !== other)
+      .map((x) => ({ id: x.personId, name: x.name, lastSeenAt: x.lastSeenAt, daysSince: daysSince(x.lastSeenAt), oneLiner: x.oneLiner, profile: null }))
+      .sort((a, b) => a.daysSince - b.daysSince);
+    return {
+      me: { id: as, name: myProfile.displayName || NAMES[as], wantsClose },
+      other: { id: other, name: otherProfile.displayName || NAMES[other] },
+      friendship: { id: fr.id || FRIENDSHIP_ID, createdAt: fr.createdAt, lastSeenAt, daysSince: fr.daysSince ?? daysSince(lastSeenAt), proposal, meetups: fr.meetups ?? [] },
+      relayLog: relayLog ?? [],
+      relayTyping: inferTyping(relayLog ?? [], fr.proposal?.status === "pending"),
+      myProfileOfOther: profileOfOther,
+      ghosts,
+      nudge: proposal ? undefined : fr.nudge?.text,
+    };
+  },
   connect: notYet("connect"),
   setWantsClose: notYet("setWantsClose"),
   respond: notYet("respond"),

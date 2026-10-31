@@ -1,27 +1,9 @@
-// Mirror of Erin's shared contract (../shared/types.ts). Do not change these.
-// Once ../shared/types.ts exists, re-export from there instead.
-
-export type UserId = string; // "erin" | "partner"
-export interface CalendarEvent { id: string; title: string; place: string; start: string; end: string }
-export interface FreeSlot { start: string; end: string; place: string } // no titles, ever
-export interface Extraction {
-  name?: string; place?: string;
-  facts: string[]; interests: string[]; commonalities: string[];
-  memories: string[]; impression?: string;
-}
-export interface Meeting { id: string; at: string; place: string; memories: string[]; impression?: string; commonalities: string[] }
-export interface PersonProfile {
-  ownerId: UserId; personId: UserId; name: string;
-  firstMetAt: string; firstMetPlace: string;
-  facts: string[]; interests: string[]; commonalities: string[];
-  impression?: string; meetings: Meeting[];
-}
-export interface Proposal {
-  id: string; at: string; place: string; reason: string;
-  status: "pending" | "accepted" | "declined";
-  responses: Record<UserId, "yes" | "no" | null>;
-}
-export interface RelayLogLine { at: string; from: string; to: string; text: string }
+// Erin's shared contract lives in ../shared/types.ts. Never change it from here.
+export type {
+  UserId, CalendarEvent, FreeSlot, Extraction, Meeting, PersonProfile,
+  PersonSummary, Proposal, RelayLogLine, Nudge, FriendshipState,
+} from "../../../shared/types";
+import type { UserId, PersonProfile, RelayLogLine } from "../../../shared/types";
 
 // ---- web-only view types (what /api/state sends to the browser) ----
 
@@ -37,7 +19,8 @@ export interface ProposalView {
 
 export interface Ghost {
   id: string; name: string; lastSeenAt: string; daysSince: number;
-  profile: PersonProfile;
+  oneLiner?: string;
+  profile: PersonProfile | null; // live mode only has a summary, no full profile
 }
 
 export interface StateView {
