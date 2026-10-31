@@ -55,7 +55,7 @@ Privacy rules were part of the design from the start:
 | Voice note transcription | `gpt-4o-mini-transcribe`, falling back to `whisper-1` | Records `audio/webm` or `audio/mp4` (iPhone Safari) with `MediaRecorder` |
 | Profile extraction | `gpt-4o-mini`, Structured Outputs | Strict JSON schema matching `Extraction`; told not to invent anything |
 | Pre-meetup brief | `gpt-4o-mini` | Generated once per accepted proposal, then cached |
-| Agent ideas and invite text | `gpt-4o-mini` | Private notes go into the prompt but are never quoted in the output |
+| Agent ideas and invite text | `gpt-4o-mini` | Private notes shape the idea; the prompt tells the model not to reveal them in the shared invite |
 
 Each AI call has a non-AI fallback, so a failed request degrades the result instead of breaking the flow.
 
@@ -70,6 +70,8 @@ cd actors
 bun install
 terse actor dev            # local server on http://127.0.0.1:7100
 ```
+
+To use deployed actors instead, run `terse deploy` and set `TERSE_ACTOR_URL` and `TERSE_API_KEY` for both the agents (`agents/.env`) and the web app (`web/.env.local`).
 
 **2. Agents** (in a second terminal)
 
@@ -103,7 +105,7 @@ npm run dev
 cloudflared tunnel --url http://localhost:3000
 ```
 
-Open the printed `https://*.trycloudflare.com` URL on two phones, one with `?as=erin` and one with `?as=partner`.
+Open the printed `https://*.trycloudflare.com` URL on two phones, one with `?as=erin` and one with `?as=charlotte`. (Internally Charlotte's user id is `partner`; old `?as=partner` links still work.)
 
 ## Pages
 
