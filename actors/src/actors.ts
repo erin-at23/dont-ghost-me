@@ -21,6 +21,7 @@ type Proposal = {
     id: string; at: string; place: string; reason: string
     status: "pending" | "accepted" | "declined"
     responses: Record<string, "yes" | "no" | null>
+    usedNoteOf?: string // whose private note shaped the idea (for the "used your private note" badge)
 }
 type RelayLogLine = { at: string; from: string; to: string; text: string }
 type Nudge = { at: string; text: string }
@@ -152,10 +153,10 @@ export class Friendship extends Actor {
         }
     }
 
-    async propose(p: { at: string; place: string; reason: string }) {
+    async propose(p: { at: string; place: string; reason: string; usedNoteOf?: string }) {
         const responses: Record<string, null> = {}
         for (const m of this.members) responses[m] = null
-        this.proposal = { id: uid(), at: p.at, place: p.place, reason: p.reason, status: "pending", responses }
+        this.proposal = { id: uid(), at: p.at, place: p.place, reason: p.reason, status: "pending", responses, ...(p.usedNoteOf ? { usedNoteOf: p.usedNoteOf } : {}) }
         return this.proposal
     }
 
